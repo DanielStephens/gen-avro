@@ -9,6 +9,27 @@
 (defprotocol Generator
   (generate [this random]))
 
+(defn random-array [random element-coercion]
+  (vec (repeatedly (random-int random 16)
+                   #(generate element-coercion random))))
+
+(defn random-map [random value-coercion]
+  (let [size (random-int random 16)
+        keys (doall (repeatedly size #(random-string random (random-int random 32))))
+        vals (doall (repeatedly size #(generate value-coercion random)))]
+    (->> (map vector keys vals)
+         (into {}))))
+
+(defn random-record [random field->schema+coercion]
+  (->> field->schema+coercion
+       (map (fn [[field-key [^Schema$Field _field field-coercion]]]
+              [field-key (generate field-coercion random)]))
+       (into {})))
+
+(defn random-union [random coercion-types]
+  (generate (random-choice random coercion-types)
+            random))
+
 (extend-protocol Generator
   SchemaCoercion
   (generate [schema-type random]
@@ -25,28 +46,19 @@
 
   ArrayType
   (generate [this random]
-    (vec (repeatedly (random-int random 16)
-                     #(generate (:element-coercion this) random))))
+    (random-array random (:element-coercion this)))
 
   MapType
   (generate [this random]
-    (let [size (random-int random 16)
-          keys (doall (repeatedly size #(random-string random (random-int random 32))))
-          vals (doall (repeatedly size #(generate (:value-coercion this) random)))]
-      (->> (map vector keys vals)
-           (into {}))))
+    (random-map random (:value-coercion this)))
 
   RecordType
   (generate [this random]
-    (->> (:field->schema+coercion this)
-         (map (fn [[field-key [^Schema$Field _field field-coercion]]]
-                [field-key (generate field-coercion random)]))
-         (into {})))
+    (random-record random (:field->schema+coercion this)))
 
   UnionType
   (generate [this random]
-    (generate (random-choice random (:coercion-types this))
-              random))
+    (random-union random (:coercion-types this)))
 
   EnumType
   (generate [this random]
