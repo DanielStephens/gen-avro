@@ -75,8 +75,9 @@
     (generate schema-coercion random)))
 
 (defn generate-from-schema-with-opts
-  [schema {:keys [seed random overlay-fn type-registry]}]
-  (let [gen-val (generate-from-schema schema random type-registry)
+  [schemas {:keys [seed random overlay-fn type-registry]}]
+  (let [schema (random-choice random schemas)
+        gen-val (generate-from-schema schema random type-registry)
         gen-val (overlay-fn gen-val)
         gen-val (if (instance? IObj gen-val)
                   (vary-meta gen-val assoc :seed seed)

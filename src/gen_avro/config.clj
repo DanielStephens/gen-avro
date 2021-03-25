@@ -8,8 +8,9 @@
 (defn previous-seed [] @previous-seed-atom)
 
 (defn- default-opts [{:keys [seed overlay] :as opts}]
-  (let [seed (cond
-               (= :previous seed) (previous-seed)
+  (let [previous-seed (previous-seed)
+        seed (cond
+               (and (= :previous seed) previous-seed) previous-seed
                (some? seed) seed
                :else (:seed (random)))
         random (random seed)
