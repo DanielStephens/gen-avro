@@ -15,7 +15,7 @@
 
 (defn random-map [random value-coercion]
   (let [size (random-int random 16)
-        keys (doall (repeatedly size #(random-string random (random-int random 32))))
+        keys (doall (repeatedly size #(generate (StringType.) random)))
         vals (doall (repeatedly size #(generate value-coercion random)))]
     (->> (map vector keys vals)
          (into {}))))

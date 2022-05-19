@@ -24,6 +24,11 @@
 
     {:name "arrayField" :type {:type :array :items :int}}
     {:name "mapField" :type {:type :map :values :int}}
+    {:name "mapComplexField" :type {:type :map
+                                    :values {:name "MapRecordName"
+                                             :namespace "MapRecordNamespace"
+                                             :type :record
+                                             :fields [{:name "mapBoolField" :type :boolean}]}}}
     {:name "nestedRecordField" :type {:name "NestedRecordName"
                                       :namespace "NestedRecordNamespace"
                                       :type :record

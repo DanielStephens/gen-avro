@@ -24,7 +24,7 @@
   ([schemas]
    (gen-one-of schemas nil))
   ([schemas opts]
-   (generate-from-schema-with-opts [schemas] (conf/init-opts opts))))
+   (generate-from-schema-with-opts schemas (conf/init-opts opts))))
 
 (defn gen
   "See `gen-one-of`
